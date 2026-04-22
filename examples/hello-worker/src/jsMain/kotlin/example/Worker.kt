@@ -27,7 +27,7 @@ import js.promise.Promise
 external fun Response(body: String, init: ResponseInit = definedExternally): Response
 
 @JsExport
-@JsName("default")
+@JsExport.Default
 val worker: ExportedHandler<Any?, Any?, Any?, Any?> =
     object : ExportedHandler<Any?, Any?, Any?, Any?> {
         override var fetch: ExportedHandlerFetchHandler<Any?, Any?, Any?>? =

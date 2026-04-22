@@ -123,7 +123,7 @@ var Unit_instance;
 function Unit_getInstance() {
   return Unit_instance;
 }
-function get_default() {
+function get_worker() {
   _init_properties_Worker_kt__eidt7m();
   return worker;
 }
@@ -146,10 +146,8 @@ initMetadataForClass(worker$1);
 Unit_instance = new Unit();
 //endregion
 //region block: exports
-var default_0 = {get: get_default};
-export {
-  default_0 as default,
-};
+var worker_0 = {get: get_worker};
+export default worker_0;
 //endregion
 
 //# sourceMappingURL=kotlin-cloudflare-workers-examples-hello-worker.mjs.map
