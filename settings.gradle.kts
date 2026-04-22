@@ -16,6 +16,9 @@ dependencyResolutionManagement {
 // Library module
 include("kotlin-cloudflare-workers")
 
+// Examples
+include("examples:hello-worker")
+
 // Generator is a nested included build so it can depend on Karakum as a
 // library and produce sources into the library module's src/jsMain/generated.
 includeBuild("kotlin-cloudflare-workers/karakum") {

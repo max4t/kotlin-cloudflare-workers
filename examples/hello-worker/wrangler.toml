@@ -1,0 +1,5 @@
+# Illustrative — not wired up to Gradle. See the build.gradle.kts snapshot
+# task for how the Kotlin code is compiled to JS.
+name = "hello-worker"
+main = "generated-js/hello-worker.mjs"
+compatibility_date = "2026-04-22"
