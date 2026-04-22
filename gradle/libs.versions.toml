@@ -1,0 +1,19 @@
+[versions]
+kotlin = "2.3.20"
+karakum = "1.0.0-alpha.107"
+coroutines = "1.10.2"
+kotlin-wrappers-js = "2026.4.10"
+cloudflare-workers-types = "4.20260422.1"
+
+[plugins]
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+
+[libraries]
+coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
+coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
+kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+kotlin-wrappers-js = { module = "org.jetbrains.kotlin-wrappers:kotlin-js", version.ref = "kotlin-wrappers-js" }
+
+# Gradle plugin markers (for build-logic precompiled plugins)
+gradlePlugins-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+gradlePlugins-karakum = { module = "io.github.sgrishchenko.karakum:io.github.sgrishchenko.karakum.gradle.plugin", version.ref = "karakum" }

@@ -1,0 +1,22 @@
+kotlin-cloudflare-workers
+Copyright 2026 Maxime Toumi and contributors
+
+This product includes software developed by JetBrains and contributors to the
+kotlin-wrappers project (https://github.com/JetBrains/kotlin-wrappers),
+licensed under the Apache License, Version 2.0.
+
+The following files are derived from, or closely modelled on, files in
+kotlin-wrappers:
+
+  - build-logic/generatorbuild/build.gradle.kts
+  - build-logic/generatorbuild/src/main/kotlin/NpmDependencies.kt
+  - build-logic/generatorbuild/src/main/kotlin/generatorbuild.karakum-conventions.gradle.kts
+  - kotlin-cloudflare-workers/karakum/ (module layout)
+
+Karakum (https://github.com/karakum-team/karakum) is used at build time to
+convert @cloudflare/workers-types TypeScript declarations to Kotlin. Karakum
+is licensed under the Apache License, Version 2.0.
+
+@cloudflare/workers-types (https://www.npmjs.com/package/@cloudflare/workers-types)
+is consumed as a build-time input. It is licensed under the BSD 3-Clause
+License and is not redistributed by this project in source form.
