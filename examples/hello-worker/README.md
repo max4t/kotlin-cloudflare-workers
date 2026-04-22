@@ -16,28 +16,36 @@ fetch-handler surface from `:kotlin-cloudflare-workers`.
 
 ## Default-export caveat
 
-`@JsExport.Default` on an `object` declaration produces:
+The Workers runtime reads `default.fetch(request, env, ctx)` off the
+module. But Kotlin/JS 2.3 wraps every top-level `@JsExport` property or
+`object` in an accessor object at the ES module boundary:
 
 ```js
-var Worker_0 = { getInstance: Worker_getInstance };
-export default Worker_0;
+// object Worker + @JsExport.Default
+export default { getInstance: Worker_getInstance };
+
+// val worker + @JsExport.Default
+export default { get: get_worker };
 ```
 
-That's Kotlin/JS's singleton-accessor emission — `default` is the accessor
-object, not the handler itself, so the Workers runtime looking up
-`default.fetch` gets `undefined`. Using a `val` property instead emits
-`{ get: get_worker }` — same problem, different accessor name. Kotlin/JS
-2.3 does not currently emit a bare value as `export default` for
-properties or objects.
+`export default X` and `export { X as default }` are equivalent JS —
+the issue isn't the export syntax, it's that `X` is an accessor wrapper
+rather than the singleton itself. `@EagerInitialization` changes
+**when** the value is computed (adds an `// eager init` block at module
+load) but not **what** is exported: the `{get: …}` wrapper is still
+emitted. There is currently no Kotlin/JS 2.3 annotation that unwraps
+this.
 
-The one-line shim in `worker-entry.mjs` unwraps it:
+Until that changes upstream, deploying needs one of:
 
-```js
-import compiled from './kotlin-cloudflare-workers-examples-hello-worker.mjs';
-export default compiled.getInstance();
-```
+- A one-line re-export shim (what `worker-entry.mjs` here does):
+  ```js
+  import compiled from './kotlin-cloudflare-workers-examples-hello-worker.mjs';
+  export default compiled.getInstance();
+  ```
+- Or a bundler step (webpack/rollup/esbuild) that inlines the accessor.
 
-`wrangler.toml`'s `main` points at the shim, not the Kotlin output.
+`wrangler.toml`'s `main` points at `worker-entry.mjs` for that reason.
 
 ## Build
 

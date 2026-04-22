@@ -20,9 +20,6 @@ import cloudflare.workers.types.index.Response
 import cloudflare.workers.types.index.ResponseInit
 import js.promise.Promise
 
-// The Worker runtime expects the module's `default` export to be an object
-// implementing the ExportedHandler shape. We bind it to an external JS
-// constructor that is shimmed in the runtime.
 @JsModule("@cloudflare/workers-types")
 external fun Response(body: String, init: ResponseInit = definedExternally): Response
 
