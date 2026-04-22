@@ -28,10 +28,9 @@ external fun Response(body: String, init: ResponseInit = definedExternally): Res
 
 @JsExport
 @JsExport.Default
-val worker: ExportedHandler<Any?, Any?, Any?, Any?> =
-    object : ExportedHandler<Any?, Any?, Any?, Any?> {
-        override var fetch: ExportedHandlerFetchHandler<Any?, Any?, Any?>? =
-            { request: Request<Any?, Any?>, _: Any?, _: ExecutionContext<Any?> ->
-                Promise.resolve(Response("Hello from Kotlin/JS! You hit ${request.url}"))
-            }
-    }
+object Worker : ExportedHandler<Any?, Any?, Any?, Any?> {
+    override var fetch: ExportedHandlerFetchHandler<Any?, Any?, Any?>? =
+        { request: Request<Any?, Any?>, _: Any?, _: ExecutionContext<Any?> ->
+            Promise.resolve(Response("Hello from Kotlin/JS! You hit ${request.url}"))
+        }
+}

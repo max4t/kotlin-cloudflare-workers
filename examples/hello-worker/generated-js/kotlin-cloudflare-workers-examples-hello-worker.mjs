@@ -7,10 +7,11 @@ class Unit {
     return 'kotlin.Unit';
   }
 }
-class worker$1 {
+class Worker {
   constructor() {
+    Worker_instance = this;
     var tmp = this;
-    tmp.a_1 = worker$o$fetch$lambda;
+    tmp.a_1 = Worker$fetch$lambda;
     delete this.fetch;
   }
   b(_set____db54di) {
@@ -53,10 +54,6 @@ function createMetadata(kind, name, defaultConstructor, associatedObjectKey, ass
   var undef = VOID;
   return {kind: kind, simpleName: name, associatedObjectKey: associatedObjectKey, associatedObjects: associatedObjects, suspendArity: suspendArity, $kClass$: undef, defaultConstructor: defaultConstructor};
 }
-function initMetadataForClass(ctor, name, defaultConstructor, parent, interfaces, suspendArity, associatedObjectKey, associatedObjects) {
-  var kind = 'class';
-  initMetadataFor(kind, ctor, name, defaultConstructor, parent, interfaces, suspendArity, associatedObjectKey, associatedObjects);
-}
 function initMetadataFor(kind, ctor, name, defaultConstructor, parent, interfaces, suspendArity, associatedObjectKey, associatedObjects) {
   if (!(parent == null)) {
     ctor.prototype = Object.create(parent.prototype);
@@ -95,15 +92,6 @@ function initMetadataForObject(ctor, name, defaultConstructor, parent, interface
   var kind = 'object';
   initMetadataFor(kind, ctor, name, defaultConstructor, parent, interfaces, suspendArity, associatedObjectKey, associatedObjects);
 }
-function initMetadataForLambda(ctor, parent, interfaces, suspendArity) {
-  initMetadataForClass(ctor, 'Lambda', VOID, parent, interfaces, suspendArity, VOID, VOID);
-}
-function initMetadataForCoroutine(ctor, parent, interfaces, suspendArity) {
-  initMetadataForClass(ctor, 'Coroutine', VOID, parent, interfaces, suspendArity, VOID, VOID);
-}
-function initMetadataForFunctionReference(ctor, parent, interfaces, suspendArity) {
-  initMetadataForClass(ctor, 'FunctionReference', VOID, parent, interfaces, suspendArity, VOID, VOID);
-}
 function initMetadataForCompanion(ctor, parent, interfaces, suspendArity) {
   initMetadataForObject(ctor, 'Companion', VOID, parent, interfaces, suspendArity, VOID, VOID);
 }
@@ -123,31 +111,26 @@ var Unit_instance;
 function Unit_getInstance() {
   return Unit_instance;
 }
-function get_worker() {
-  _init_properties_Worker_kt__eidt7m();
-  return worker;
-}
-var worker;
-function worker$o$fetch$lambda(request, _unused_var__etf5q3, _unused_var__etf5q3_0) {
+function Worker$fetch$lambda(request, _unused_var__etf5q3, _unused_var__etf5q3_0) {
   return Promise.resolve(example_Response_rjjrdx('Hello from Kotlin/JS! You hit ' + request.url));
 }
-var properties_initialized_Worker_kt_gr88g0;
-function _init_properties_Worker_kt__eidt7m() {
-  if (!properties_initialized_Worker_kt_gr88g0) {
-    properties_initialized_Worker_kt_gr88g0 = true;
-    worker = new worker$1();
-  }
+protoOf(Worker)['<set-fetch>'] = protoOf(Worker).c;
+var Worker_instance;
+function Worker_getInstance() {
+  if (Worker_instance === VOID)
+    new Worker();
+  return Worker_instance;
 }
 //region block: post-declaration
 initMetadataForObject(Unit, 'Unit');
-initMetadataForClass(worker$1);
+initMetadataForObject(Worker, 'Worker');
 //endregion
 //region block: init
 Unit_instance = new Unit();
 //endregion
 //region block: exports
-var worker_0 = {get: get_worker};
-export default worker_0;
+var Worker_0 = {getInstance: Worker_getInstance};
+export default Worker_0;
 //endregion
 
 //# sourceMappingURL=kotlin-cloudflare-workers-examples-hello-worker.mjs.map
