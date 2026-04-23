@@ -1,15 +1,40 @@
 package cfworkersgenerator
 
+import arrow.core.raise.nullable
 import io.github.sgrishchenko.karakum.configuration.*
+import io.github.sgrishchenko.karakum.extension.plugins.configurable.PromiseFunctionPlugin
+import io.github.sgrishchenko.karakum.extension.plugins.configurable.PromiseMethodPlugin
 import io.github.sgrishchenko.karakum.extension.plugins.configurable.PromiseResultPlugin
 import io.github.sgrishchenko.karakum.generate
 import io.github.sgrishchenko.karakum.util.ruleOf
 import js.array.ReadonlyArray
+import typescript.Node
+import typescript.isIdentifier
+import typescript.isTypeReferenceNode
+
+// Cloudflare's index.d.ts uses the plain `Promise<T>` constructor; we don't
+// need the `PipelinePromise` / `*Promise` fan-out that kotlin-node handles.
+private fun isPromiseType(node: Node) = nullable {
+    ensure(isTypeReferenceNode(node))
+    val typeName = node.typeName
+    ensure(isIdentifier(typeName))
+    ensure(typeName.text == "Promise")
+} != null
+
+private fun createPromiseFunctionPlugin() = PromiseFunctionPlugin(
+    isPromiseType = { node, _ -> isPromiseType(node) },
+)
+
+private fun createPromiseMethodPlugin() = PromiseMethodPlugin(
+    isPromiseType = { node, _ -> isPromiseType(node) },
+)
 
 suspend fun main(args: ReadonlyArray<String>) {
     generate(args) {
         plugins = listOf(
             PromiseResultPlugin(),
+            createPromiseFunctionPlugin(),
+            createPromiseMethodPlugin(),
         )
         injections = listOf()
         annotations = listOf()
@@ -98,6 +123,8 @@ suspend fun main(args: ReadonlyArray<String>) {
             "**/removeEventListener.kt",
             "**/dispatchEvent.kt",
             "**/fetch.kt",
+            "**/fetch.suspend.kt",
+            "**/instantiate.suspend.kt",
             "**/setTimeout.kt",
             "**/clearTimeout.kt",
             "**/setInterval.kt",

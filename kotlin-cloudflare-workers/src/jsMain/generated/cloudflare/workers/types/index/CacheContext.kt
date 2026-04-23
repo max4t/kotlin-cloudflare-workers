@@ -3,5 +3,9 @@
 package cloudflare.workers.types.index
 
 external interface CacheContext {
-    fun purge(options: CachePurgeOptions): js.promise.Promise<CachePurgeResult>
+    @JsName("purge")
+    fun purgeAsync(options: CachePurgeOptions): js.promise.Promise<CachePurgeResult>
+
+    @seskar.js.JsAsync
+    suspend fun purge(options: CachePurgeOptions): CachePurgeResult
 }

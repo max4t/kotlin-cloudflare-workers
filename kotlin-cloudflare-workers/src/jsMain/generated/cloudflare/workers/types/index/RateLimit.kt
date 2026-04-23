@@ -8,5 +8,9 @@ external interface RateLimit {
      * @see https://developers.cloudflare.com/workers/runtime-apis/bindings/rate-limit/
      * @returns A promise that resolves with the outcome of the rate limit.
      */
-    fun limit(options: RateLimitOptions): js.promise.Promise<RateLimitOutcome>
+    @JsName("limit")
+    fun limitAsync(options: RateLimitOptions): js.promise.Promise<RateLimitOutcome>
+
+    @seskar.js.JsAsync
+    suspend fun limit(options: RateLimitOptions): RateLimitOutcome
 }

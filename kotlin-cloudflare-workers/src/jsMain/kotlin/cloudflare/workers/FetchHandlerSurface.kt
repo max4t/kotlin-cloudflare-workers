@@ -10,20 +10,23 @@
 // mature. The surface intentionally omits fields that pull in non-MVP types
 // (WebSocket, streams, AbortSignal, Fetcher, Cache, etc.) — they can be added
 // in follow-up PRs.
+//
+// Promise-returning methods are declared as `suspend fun` to match the
+// convention produced by the Karakum PromiseMethodPlugin for the generated
+// bindings.
 @file:JsModule("@cloudflare/workers-types")
 
 package cloudflare.workers.types.index
 
 import js.buffer.ArrayBuffer
-import js.promise.Promise
 
 // ---- Body ---------------------------------------------------------------
 
 external abstract class Body {
     val bodyUsed: Boolean
-    fun arrayBuffer(): Promise<ArrayBuffer>
-    fun text(): Promise<String>
-    fun json(): Promise<Any?>
+    suspend fun arrayBuffer(): ArrayBuffer
+    suspend fun text(): String
+    suspend fun json(): Any?
 }
 
 typealias BodyInit = Any
@@ -68,9 +71,9 @@ external interface Response {
     val headers: Headers
     val bodyUsed: Boolean
     fun clone(): Response
-    fun arrayBuffer(): Promise<ArrayBuffer>
-    fun text(): Promise<String>
-    fun json(): Promise<Any?>
+    suspend fun arrayBuffer(): ArrayBuffer
+    suspend fun text(): String
+    suspend fun json(): Any?
 }
 
 external interface ResponseInit {
@@ -82,11 +85,9 @@ external interface ResponseInit {
 // ---- ExportedHandler (fetch-only MVP) -----------------------------------
 
 external interface ExportedHandler<Env, QueueHandlerMessage, CfHostMetadata, Props> {
-    var fetch: ExportedHandlerFetchHandler<Env, CfHostMetadata, Props>?
+    suspend fun fetch(
+        request: Request<CfHostMetadata, Any?>,
+        env: Env,
+        ctx: ExecutionContext<Props>,
+    ): Response
 }
-
-typealias ExportedHandlerFetchHandler<Env, CfHostMetadata, Props> = (
-    request: Request<CfHostMetadata, Any?>,
-    env: Env,
-    ctx: ExecutionContext<Props>,
-) -> Promise<Response>

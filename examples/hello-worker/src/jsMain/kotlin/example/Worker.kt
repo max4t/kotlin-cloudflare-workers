@@ -14,29 +14,30 @@ package example
 
 import cloudflare.workers.types.index.ExecutionContext
 import cloudflare.workers.types.index.ExportedHandler
-import cloudflare.workers.types.index.ExportedHandlerFetchHandler
 import cloudflare.workers.types.index.Request
 import cloudflare.workers.types.index.Response
 import cloudflare.workers.types.index.ResponseInit
-import js.promise.Promise
 import kotlin.js.ExperimentalJsStatic
 import kotlin.js.JsStatic
 
 @JsModule("@cloudflare/workers-types")
 external fun Response(body: String, init: ResponseInit = definedExternally): Response
 
-// Class + @JsExport.Default emits `export default Worker;` (no accessor
-// wrapper). The companion implements ExportedHandler so the compiler
-// type-checks the signature; @JsStatic promotes the overridden `fetch`
-// to a static property on Worker so CF's `default.fetch(...)` resolves.
+// Class + @JsExport.Default emits `export default Worker;`. The companion
+// implements ExportedHandler so `fetch` is type-checked as a suspend
+// function override. Kotlin 2.3's `-Xenable-suspend-function-exporting`
+// flag lets us export the suspend `fetch` directly — Kotlin/JS compiles
+// it into a Promise-returning JS function, matching the Workers
+// fetch-handler contract that `default.fetch(...)` returns a Promise.
 @JsExport
 @JsExport.Default
 class Worker {
     companion object : ExportedHandler<Any?, Any?, Any?, Any?> {
         @JsStatic
-        override var fetch: ExportedHandlerFetchHandler<Any?, Any?, Any?>? =
-            { request: Request<Any?, Any?>, _: Any?, _: ExecutionContext<Any?> ->
-                Promise.resolve(Response("Hello from Kotlin/JS! You hit ${request.url}"))
-            }
+        override suspend fun fetch(
+            request: Request<Any?, Any?>,
+            env: Any?,
+            ctx: ExecutionContext<Any?>,
+        ): Response = Response("Hello from Kotlin/JS! You hit ${request.url}")
     }
 }

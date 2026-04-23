@@ -14,7 +14,11 @@ external interface StreamScopedDownloads {
      * @throws {StreamError} if the video is not ready to stream
      * @throws {InternalError} if an unexpected error occurs
      */
-    fun generate(downloadType: StreamDownloadType = definedExternally): js.promise.Promise<StreamDownloadGetResponse>
+    @JsName("generate")
+    fun generateAsync(downloadType: StreamDownloadType = definedExternally): js.promise.Promise<StreamDownloadGetResponse>
+
+    @seskar.js.JsAsync
+    suspend fun generate(downloadType: StreamDownloadType = definedExternally): StreamDownloadGetResponse
 
 /**
      * Lists the downloads created for a video.
@@ -22,7 +26,11 @@ external interface StreamScopedDownloads {
      * @throws {NotFoundError} if the video or downloads are not found
      * @throws {InternalError} if an unexpected error occurs
      */
-    fun get(): js.promise.Promise<StreamDownloadGetResponse>
+    @JsName("get")
+    fun getAsync(): js.promise.Promise<StreamDownloadGetResponse>
+
+    @seskar.js.JsAsync
+    suspend fun get(): StreamDownloadGetResponse
 
 /**
      * Delete the downloads for a video. Available types are `default` and `audio`.
@@ -32,5 +40,9 @@ external interface StreamScopedDownloads {
      * @throws {NotFoundError} if the video or downloads are not found
      * @throws {InternalError} if an unexpected error occurs
      */
-    fun delete(downloadType: StreamDownloadType = definedExternally): js.promise.Promise<js.core.Void>
+    @JsName("delete")
+    fun deleteAsync(downloadType: StreamDownloadType = definedExternally): js.promise.Promise<js.core.Void>
+
+    @seskar.js.JsAsync
+    suspend fun delete(downloadType: StreamDownloadType = definedExternally): js.core.Void
 }

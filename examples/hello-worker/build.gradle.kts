@@ -17,6 +17,9 @@ kotlin {
             target = "es2015"
             moduleKind = JsModuleKind.MODULE_ES
             useEsClasses = true
+            // Kotlin 2.3+: allows @JsExport on suspend functions so Worker's
+            // fetch handler can be written as a direct `suspend fun` override.
+            freeCompilerArgs.add("-Xenable-suspend-function-exporting")
         }
     }
 

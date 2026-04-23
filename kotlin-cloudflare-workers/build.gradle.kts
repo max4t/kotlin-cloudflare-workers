@@ -20,6 +20,7 @@ kotlin {
             dependencies {
                 api(libs.kotlin.wrappers.js)
                 api(libs.coroutines.core)
+                api(libs.seskar.core)
                 api(npm("@cloudflare/workers-types", libs.versions.cloudflare.workers.types.get()))
             }
         }

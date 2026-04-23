@@ -8,27 +8,14 @@ class Unit {
   }
 }
 class Companion {
-  constructor() {
-    Companion_instance = this;
-    var tmp = this;
-    tmp.a_1 = Worker$Companion$fetch$lambda;
-    delete this.fetch;
+  *a(request, env, ctx, $completion) {
+    return example_Response_rjjrdx('Hello from Kotlin/JS! You hit ' + request.url);
   }
-  b(_set____db54di) {
-    this.a_1 = _set____db54di;
-  }
-  c(_set____db54di) {
-    return this.b(_set____db54di);
-  }
-  d() {
-    return this.a_1;
+  fetch(request, env, ctx, $completion) {
+    return this.a(request, env, ctx, $completion);
   }
 }
-class Worker {
-  constructor() {
-    Companion_getInstance();
-  }
-}
+class Worker {}
 //endregion
 function defineProp(obj, name, getter, setter, enumerable) {
   return Object.defineProperty(obj, name, {configurable: true, get: getter, set: setter, enumerable: enumerable});
@@ -123,33 +110,24 @@ var Unit_instance;
 function Unit_getInstance() {
   return Unit_instance;
 }
-function Worker$Companion$fetch$lambda(request, _unused_var__etf5q3, _unused_var__etf5q3_0) {
-  return Promise.resolve(example_Response_rjjrdx('Hello from Kotlin/JS! You hit ' + request.url));
-}
-protoOf(Companion)['<set-fetch>'] = protoOf(Companion).c;
 var Companion_instance;
 function Companion_getInstance() {
-  if (Companion_instance === VOID)
-    new Companion();
   return Companion_instance;
 }
-function set_fetch(_set____db54di) {
-  Companion_getInstance().a_1 = _set____db54di;
-  return Unit_instance;
-}
-function get_fetch() {
-  return Companion_getInstance().a_1;
+function *fetch(request, env, ctx, $completion) {
+  return yield* Companion_instance.a(request, env, ctx, $completion);
 }
 //region block: post-declaration
 initMetadataForObject(Unit, 'Unit');
-initMetadataForCompanion(Companion);
-initMetadataForClass(Worker, 'Worker', Worker);
+initMetadataForCompanion(Companion, VOID, VOID, [3]);
+initMetadataForClass(Worker, 'Worker', Worker, VOID, VOID, [3]);
 //endregion
 //region block: init
 Unit_instance = new Unit();
+Companion_instance = new Companion();
 //endregion
 //region block: exports
-defineProp(Worker, 'fetch', get_fetch, set_fetch, true);
+Worker.fetch = fetch;
 defineProp(Worker, 'Companion', Companion_getInstance, VOID, true);
 export default Worker;
 //endregion
