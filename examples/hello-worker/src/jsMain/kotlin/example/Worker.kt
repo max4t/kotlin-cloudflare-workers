@@ -8,7 +8,7 @@
 //
 // Deploy (not wired up here; illustrative only):
 //   wrangler deploy generated-js/hello-worker.mjs
-@file:OptIn(ExperimentalJsExport::class)
+@file:OptIn(ExperimentalJsExport::class, ExperimentalJsStatic::class)
 
 package example
 
@@ -18,22 +18,24 @@ import cloudflare.workers.types.index.Request
 import cloudflare.workers.types.index.Response
 import cloudflare.workers.types.index.ResponseInit
 import js.promise.Promise
-import kotlinx.js.JsPlainObject
+import kotlin.js.ExperimentalJsStatic
+import kotlin.js.JsStatic
 
 @JsModule("@cloudflare/workers-types")
 external fun Response(body: String, init: ResponseInit = definedExternally): Response
 
-// @JsPlainObject makes implementations a literal `{ fetch: ... }` JS object
-// at runtime instead of a Kotlin class instance with metadata.
-@JsPlainObject
-external interface SimpleHandler {
-    val fetch: ExportedHandlerFetchHandler<Any?, Any?, Any?>
-}
-
+// Class + @JsExport.Default emits `export default Worker;` (no accessor
+// wrapper). CF reads default.fetch(...), so we need `fetch` to be a
+// static field on the class — @JsStatic on a companion member promotes
+// it to `Worker.fetch` in the emitted JS.
 @JsExport
 @JsExport.Default
-val worker: SimpleHandler = SimpleHandler(
-    fetch = { request: Request<Any?, Any?>, _: Any?, _: ExecutionContext<Any?> ->
-        Promise.resolve(Response("Hello from Kotlin/JS! You hit ${request.url}"))
-    },
-)
+class Worker {
+    companion object {
+        @JsStatic
+        val fetch: ExportedHandlerFetchHandler<Any?, Any?, Any?> =
+            { request: Request<Any?, Any?>, _: Any?, _: ExecutionContext<Any?> ->
+                Promise.resolve(Response("Hello from Kotlin/JS! You hit ${request.url}"))
+            }
+    }
+}

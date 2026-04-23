@@ -1,7 +1,5 @@
 # Illustrative — not wired up to Gradle. See the build.gradle.kts snapshot
-# task for how the Kotlin code is compiled to JS. The entry is the small
-# shim (worker-entry.mjs) that unwraps Kotlin's singleton accessor, not the
-# raw Kotlin output .mjs.
+# task for how the Kotlin code is compiled to JS.
 name = "hello-worker"
-main = "generated-js/worker-entry.mjs"
+main = "generated-js/kotlin-cloudflare-workers-examples-hello-worker.mjs"
 compatibility_date = "2026-04-22"
