@@ -12,8 +12,15 @@ class Companion {
     Companion_instance = this;
     var tmp = this;
     tmp.a_1 = Worker$Companion$fetch$lambda;
+    delete this.fetch;
   }
-  b() {
+  b(_set____db54di) {
+    this.a_1 = _set____db54di;
+  }
+  c(_set____db54di) {
+    return this.b(_set____db54di);
+  }
+  d() {
     return this.a_1;
   }
 }
@@ -119,11 +126,16 @@ function Unit_getInstance() {
 function Worker$Companion$fetch$lambda(request, _unused_var__etf5q3, _unused_var__etf5q3_0) {
   return Promise.resolve(example_Response_rjjrdx('Hello from Kotlin/JS! You hit ' + request.url));
 }
+protoOf(Companion)['<set-fetch>'] = protoOf(Companion).c;
 var Companion_instance;
 function Companion_getInstance() {
   if (Companion_instance === VOID)
     new Companion();
   return Companion_instance;
+}
+function set_fetch(_set____db54di) {
+  Companion_getInstance().a_1 = _set____db54di;
+  return Unit_instance;
 }
 function get_fetch() {
   return Companion_getInstance().a_1;
@@ -137,7 +149,7 @@ initMetadataForClass(Worker, 'Worker', Worker);
 Unit_instance = new Unit();
 //endregion
 //region block: exports
-defineProp(Worker, 'fetch', get_fetch, VOID, true);
+defineProp(Worker, 'fetch', get_fetch, set_fetch, true);
 defineProp(Worker, 'Companion', Companion_getInstance, VOID, true);
 export default Worker;
 //endregion
