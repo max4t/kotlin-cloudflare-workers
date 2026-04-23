@@ -7,29 +7,6 @@ class Unit {
     return 'kotlin.Unit';
   }
 }
-class Worker {
-  constructor() {
-    Worker_instance = this;
-    var tmp = this;
-    tmp.a_1 = Worker$fetch$lambda;
-    delete this.fetch;
-  }
-  b(_set____db54di) {
-    this.a_1 = _set____db54di;
-  }
-  c(_set____db54di) {
-    return this.b(_set____db54di);
-  }
-  d() {
-    return this.a_1;
-  }
-  get fetch() {
-    return this.d();
-  }
-  set fetch(value) {
-    this.b(value);
-  }
-}
 //endregion
 function defineProp(obj, name, getter, setter, enumerable) {
   return Object.defineProperty(obj, name, {configurable: true, get: getter, set: setter, enumerable: enumerable});
@@ -111,26 +88,33 @@ var Unit_instance;
 function Unit_getInstance() {
   return Unit_instance;
 }
-function Worker$fetch$lambda(request, _unused_var__etf5q3, _unused_var__etf5q3_0) {
+function get_worker() {
+  _init_properties_Worker_kt__eidt7m();
+  return worker;
+}
+var worker;
+function worker$lambda(request, _unused_var__etf5q3, _unused_var__etf5q3_0) {
+  _init_properties_Worker_kt__eidt7m();
   return Promise.resolve(example_Response_rjjrdx('Hello from Kotlin/JS! You hit ' + request.url));
 }
-protoOf(Worker)['<set-fetch>'] = protoOf(Worker).c;
-var Worker_instance;
-function Worker_getInstance() {
-  if (Worker_instance === VOID)
-    new Worker();
-  return Worker_instance;
+var properties_initialized_Worker_kt_gr88g0;
+function _init_properties_Worker_kt__eidt7m() {
+  if (!properties_initialized_Worker_kt_gr88g0) {
+    properties_initialized_Worker_kt_gr88g0 = true;
+    // Inline function 'example.SimpleHandler.Companion.invoke' call
+    // Inline function 'example.example_SimpleHandler_Companion_kdhjbm_invoke_jkqnwo' call
+    worker = {fetch: worker$lambda};
+  }
 }
 //region block: post-declaration
 initMetadataForObject(Unit, 'Unit');
-initMetadataForObject(Worker, 'Worker');
 //endregion
 //region block: init
 Unit_instance = new Unit();
 //endregion
 //region block: exports
-var Worker_0 = {getInstance: Worker_getInstance};
-export default Worker_0;
+var worker_0 = {get: get_worker};
+export default worker_0;
 //endregion
 
 //# sourceMappingURL=kotlin-cloudflare-workers-examples-hello-worker.mjs.map

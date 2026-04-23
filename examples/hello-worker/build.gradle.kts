@@ -2,6 +2,7 @@ import org.jetbrains.kotlin.gradle.dsl.JsModuleKind
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.kotlin.jsPlainObjects)
 }
 
 repositories {

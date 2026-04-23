@@ -14,34 +14,47 @@ fetch-handler surface from `:kotlin-cloudflare-workers`.
   caveat* below.
 - `wrangler.toml` — illustrative deploy config, pointed at the shim.
 
-## Default-export caveat
+## Two emission concerns: value shape vs export wrapper
 
-The Workers runtime reads `default.fetch(request, env, ctx)` off the
-module. But Kotlin/JS 2.3 wraps every top-level `@JsExport` property or
-`object` in an accessor object at the ES module boundary:
+The example uses `@JsPlainObject` (`org.jetbrains.kotlin.plugin.js-plain-objects`)
+on a `SimpleHandler` interface and constructs the worker via the generated
+factory. That makes the underlying value a real plain JS object literal:
 
 ```js
-// object Worker + @JsExport.Default
-export default { getInstance: Worker_getInstance };
+worker = { fetch: worker$lambda };
+```
 
-// val worker + @JsExport.Default
-export default { get: get_worker };
+— no Kotlin class, no `protoOf()` plumbing, no metadata. Without the
+plugin, `object Worker : ExportedHandler<…>` produces a Kotlin singleton
+class that adds ~30 lines of init/proto plumbing.
+
+But the **export side** is a separate concern. Kotlin/JS 2.3 wraps every
+top-level `@JsExport` property or `object` in an accessor at the ES
+module boundary, regardless of how clean the value itself is:
+
+```js
+// val worker + @JsExport.Default + @JsPlainObject
+var worker_0 = { get: get_worker };
+export default worker_0;
+
+// object Worker + @JsExport.Default
+var Worker_0 = { getInstance: Worker_getInstance };
+export default Worker_0;
 ```
 
 `export default X` and `export { X as default }` are equivalent JS —
-the issue isn't the export syntax, it's that `X` is an accessor wrapper
-rather than the singleton itself. `@EagerInitialization` changes
-**when** the value is computed (adds an `// eager init` block at module
-load) but not **what** is exported: the `{get: …}` wrapper is still
-emitted. There is currently no Kotlin/JS 2.3 annotation that unwraps
-this.
+the issue isn't the export syntax, it's that `X` is the accessor object,
+not the value. Confirmed empirically that `@EagerInitialization`,
+`JsAny` supertypes, `@JsName("default")` and `@JsPlainObject` all leave
+the wrapper in place; the wrapping decision is made by the IR backend
+at the export-emission step, downstream of types and annotations.
 
 Until that changes upstream, deploying needs one of:
 
 - A one-line re-export shim (what `worker-entry.mjs` here does):
   ```js
   import compiled from './kotlin-cloudflare-workers-examples-hello-worker.mjs';
-  export default compiled.getInstance();
+  export default compiled.get();
   ```
 - Or a bundler step (webpack/rollup/esbuild) that inlines the accessor.
 
