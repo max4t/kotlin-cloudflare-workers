@@ -8,7 +8,7 @@
 //
 // Deploy (not wired up here; illustrative only):
 //   wrangler deploy generated-js/hello-worker.mjs
-@file:OptIn(ExperimentalJsExport::class, ExperimentalJsStatic::class)
+@file:OptIn(ExperimentalJsExport::class, ExperimentalJsStatic::class, DelicateCoroutinesApi::class)
 
 package example
 
@@ -17,27 +17,33 @@ import cloudflare.workers.types.index.ExportedHandler
 import cloudflare.workers.types.index.Request
 import cloudflare.workers.types.index.Response
 import cloudflare.workers.types.index.ResponseInit
+import js.coroutines.promise
+import js.promise.Promise
 import kotlin.js.ExperimentalJsStatic
 import kotlin.js.JsStatic
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
 
 @JsModule("@cloudflare/workers-types")
 external fun Response(body: String, init: ResponseInit = definedExternally): Response
 
 // Class + @JsExport.Default emits `export default Worker;`. The companion
-// implements ExportedHandler so `fetch` is type-checked as a suspend
-// function override. Kotlin 2.3's `-Xenable-suspend-function-exporting`
-// flag lets us export the suspend `fetch` directly — Kotlin/JS compiles
-// it into a Promise-returning JS function, matching the Workers
-// fetch-handler contract that `default.fetch(...)` returns a Promise.
+// implements ExportedHandler; `@JsStatic` copies `fetch` to `Worker.fetch`,
+// matching Cloudflare's `defaultExport.fetch(req, env, ctx)` contract.
+// `fetch` returns `Promise<Response>` directly (see ExportedHandler's
+// comment for why suspend export isn't used). `GlobalScope.promise { ... }`
+// bridges a suspending body into the Promise the runtime expects.
 @JsExport
 @JsExport.Default
 class Worker {
     companion object : ExportedHandler<Any?, Any?, Any?, Any?> {
         @JsStatic
-        override suspend fun fetch(
+        override fun fetch(
             request: Request<Any?, Any?>,
             env: Any?,
             ctx: ExecutionContext<Any?>,
-        ): Response = Response("Hello from Kotlin/JS! You hit ${request.url}")
+        ): Promise<Response> = GlobalScope.promise {
+            Response("Hello from Kotlin/JS! You hit ${request.url}")
+        }
     }
 }

@@ -11,14 +11,18 @@
 // (WebSocket, streams, AbortSignal, Fetcher, Cache, etc.) — they can be added
 // in follow-up PRs.
 //
-// Promise-returning methods are declared as `suspend fun` to match the
-// convention produced by the Karakum PromiseMethodPlugin for the generated
-// bindings.
+// Consumption-side Promise methods (on Body / Response) are declared as
+// `suspend fun` to match the convention produced by the Karakum
+// PromiseMethodPlugin for the generated bindings (JS → Kotlin direction).
+// The EXPORT-side handler (`ExportedHandler.fetch`) declares a concrete
+// `js.promise.Promise<Response>` return instead — see the comment on
+// `ExportedHandler` below.
 @file:JsModule("@cloudflare/workers-types")
 
 package cloudflare.workers.types.index
 
 import js.buffer.ArrayBuffer
+import js.promise.Promise
 
 // ---- Body ---------------------------------------------------------------
 
@@ -83,11 +87,31 @@ external interface ResponseInit {
 }
 
 // ---- ExportedHandler (fetch-only MVP) -----------------------------------
-
+//
+// `fetch` returns `js.promise.Promise<Response>`, not `suspend fun`. Two
+// reasons:
+//
+//   1. kotlin-wrappers/kotlin-node convention: suspend is a consumer-side
+//      adapter only (JS Promise → Kotlin via seskar's `@JsAsync`). Export
+//      boundaries use `js.promise.Promise<T>`; implementers build one with
+//      `js.coroutines.promise { ... }` (or `kotlinx.coroutines.promise`
+//      then `.unsafeCast`) from a suspending body.
+//
+//   2. Cloudflare Workers requires `defaultExport.fetch(req, env, ctx)` on
+//      an OBJECT. Kotlin 2.3's `-Xenable-suspend-function-exporting` only
+//      generates a Promise-returning `fetch` when the suspend function is
+//      a direct instance method on a `@JsExport` class — making the class
+//      CONSTRUCTOR the default export, which Cloudflare rejects unless the
+//      class extends `WorkerEntrypoint`. For any override of an interface
+//      `suspend` method (including `@JsStatic` on a companion), the flag
+//      still emits a CPS generator with `$completion`, breaking the
+//      handler contract. The `Promise<Response>` form lets users attach a
+//      `@JsStatic` companion `fetch` to the exported class without
+//      triggering CPS lowering.
 external interface ExportedHandler<Env, QueueHandlerMessage, CfHostMetadata, Props> {
-    suspend fun fetch(
+    fun fetch(
         request: Request<CfHostMetadata, Any?>,
         env: Env,
         ctx: ExecutionContext<Props>,
-    ): Response
+    ): Promise<Response>
 }
